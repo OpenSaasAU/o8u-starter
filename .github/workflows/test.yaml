@@ -1,0 +1,28 @@
+name: Test on PR
+
+on:
+  pull_request:
+
+jobs:
+  test:
+    name: Run Lint and Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Use Latest Corepack
+        run: |
+          echo "Before: corepack version => $(corepack --version || echo 'not installed')"
+          npm install -g corepack@latest
+          echo "After : corepack version => $(corepack --version)"
+          corepack enable
+          pnpm --version
+
+      - uses: actions/setup-node@main
+        with:
+          node-version: lts/*
+          registry-url: 'https://registry.npmjs.org'
+          cache: pnpm
+
+      - run: pnpm install
+      - run: pnpm lint
